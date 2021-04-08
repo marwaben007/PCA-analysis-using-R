@@ -1,0 +1,108 @@
+---
+title: "TD1"
+author: "Marwa Benahnia- Big DATA"
+date: "10/02/2021"
+output:
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Sujet de TD
+
+On s’intéresse à la fertilité des femmes en Europe en 2012.
+
+Notre jeu de données contient 39 Pays d’Europe en lignes et en colonnes les tranches d’âge 15-19, 20-24, 25-29, 30-34, 35-39, 40 et
+plus.
+
+Calcul de la fertilité: c'est le nombre moyen d’enfants nés vivants pour 1000 femmes.
+
+But : Appliquer L'ACP afin de répondre aux questions.
+
+# Chargement de la librairie
+```{r}
+library(FactoMineR)
+```
+# Importation des données et affichage des graphes
+On nomme notre base de données Datafert et on l'importe.
+```{r}
+Datafert <- read.table("C:/Users/Marwa/Desktop/M1 big data/s2/Analyse de données/td/AnaDo_JeuDonnees_FertiliteEurope.csv",header=TRUE, sep=";",dec=".", row.names=1,check.names=FALSE, fileEncoding="latin1")
+summary(Datafert)
+```
+Application de l'ACP et affichage des graphes
+
+- Les individus sont les pays 
+
+- Les variables sont les tranches d'age.
+```{r}
+res <- PCA(Datafert[,1:6])
+```
+
+# Interprétation des graphes aprés l'ACP
+
+a) la variable la plus liée à la dimension 2 est 25-29
+
+b) le pays qui a le  taux de fertilité le plus élevé pour la classe 20-24 ans est Albanie
+
+c) On constate d'aprés la graphe de l'ACP que les Danoises et des Hollandaises ont presque les memes taux de fertilité pour tous les ages car les points présentatatifs sont trés proches.
+
+d) Le taux de fertilité des Irlandaises comparativement aux autres pays d'Europe pour les ages 35-39 et 40+ varie d'une manière significative( parceque l'Irlande se situe sur l'axe dim1 de l'ACP qui est colinéaire aux variable 35-39 et 40+) .
+
+e) Les quatre pays ayant un taux de fertilité très proche pour toutes les classes d'âge sont: Danemark, Pays-bas,Finlande et Norvège.
+
+f) Le taux de fertilité (pour toutes les classes d'âge) des Croates est proche du taux de fertilité moyen des pays d’Europe.
+ 
+g) La fertilité des femmes de plus de 35 ans dans les pays où la fertilité des adolescentes est faible est trés élevée car les 2 axes (35-39 et 15-19) ont des sens opposés.
+
+# Pourcentage d’inertie du plan principal
+```{r}
+summary(res, nbelements=Inf)
+```
+- Le pourcentage d’inertie associé au plan principal est de 84.369% (table Eigenvalues, cumulative % ofvar, dim2)
+
+- Le pays ayant le plus contribué à la création de l’axe 1 est l'Irlande (table Individuals,max ctr pour Dim.1 )
+
+- Les trois pays ayant le plus contribué à la création de l’axe 2 sont: l'Espagne, Albanie et la France.
+
+# Graphe sur les dimensions 3 et 4
+```{r}
+plot(res, choix="ind", cex=0.8, title="Graphe des individus", axes=3:4)
+```
+
+# Variables corrélées à la première dimension
+```{r}
+dimdesc(res, axes=1, proba=0.2)
+```
+Les quatre variables ayant un taux de corrélation de plus de 0.8 avec la première dimension sont : 
+            -  35-39
+            -  30-34
+            -  40 et +
+            -  15-19
+          
+# Individus contribuant le plus à la création du plan
+```{r}
+plot(res, cex=0.8, select="contrib 6")
+```
+
+Les 6 individus ayant le plus contribué à la construction du plan (sur les dimensions 1-2) sont: Albanie , Ukraine, Bulgarie, Moldavie , Espagne et Irlande.
+
+# Cercle des corrélations
+```{r}
+plot(res, choix="var", label="var", select="contrib 2")
+```
+
+# Graphique final
+```{r}
+res2 <- PCA(Datafert, quali.sup=7)
+```
+```{r}
+plot(res2, cex=0.8,habillage="Région", select="cos2 0.95")
+```
+
+Comparaison de la région Europe de l’Est à la région Europe du Nord:
+le taux de la fertilité des 2 régions varie d'une manière opposée car elles sont symétriques par rapport à l'axe Dim2 ce qui signifie que pour la tranche d'age qui contribue le maximum à la construction de Dim1, les 2 régions ont une variation opposée.
+ 
+# Fin
+
